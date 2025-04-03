@@ -1,0 +1,82 @@
+﻿@model Artist
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+<div class="text-center">
+   <button name="button" onclick="BackMaster()">Regresar</button>
+</div>
+
+
+<div style="margin-bottom:5px" class="text-center">
+   Nombre
+   <input type="text" id="nombre" name="nombre" />
+</div>
+
+<div  style="margin-bottom:5px" class="text-center">
+    Pais
+   <input type="text" id="pais" name="pais" />
+</div>
+
+<div  style="margin-bottom:5px" class="text-center">
+    Descripcion
+   <input type="text"  id="descripcion" name="descripcion" />
+</div>
+
+<div class="text-center">
+   <button name="button" onclick="Actualizar()">Actualizar</button>
+</div>
+
+<script>
+     document.getElementById("nombre").value = '@Model.Name'; 
+     document.getElementById("pais").value = '@Model.Country';
+     document.getElementById("descripcion").value = '@Model.Description';
+
+     
+     
+    function Actualizar() {
+
+        var nombre=document.getElementById("nombre").value;
+        var pais=document.getElementById("pais").value;
+        var descripcion= document.getElementById("descripcion").value;
+
+        var resultado=Validaciones(nombre,pais,descripcion);
+    
+        if(resultado==0){
+             window.location = '@Url.Action("PostArtist", "Home")?ID=' + @Model.ID+'&Name='+nombre+'&Country='+pais+'&Description='+descripcion; 
+        }
+    }
+
+
+    function  Validaciones(nombre,pais,descripcion){
+        var resultado=0;
+        if(nombre == "" || pais== "" || descripcion==""){
+            alert("Nombre, pais y descripcion son obligatorios");
+            resultado=1;
+        }
+        
+        if(nombre.length>100){
+            alert("Nombre debe ser menor a 100 caracteres");
+             resultado=1;
+        }
+
+         if(pais.length>100){
+            alert("Pais debe ser menor a 100 caracteres");
+             resultado=1;
+        }
+
+         if(descripcion.length>250){
+            alert("Descripcion debe ser menor a 250 caracteres");
+             resultado=1;
+        }
+        return resultado;
+    }
+
+
+    function BackMaster(){
+         window.location = '@Url.Action("GetArtist", "Home")'; 
+    }
+
+</script>

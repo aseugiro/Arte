@@ -1,0 +1,10 @@
+﻿@model List<Artist>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+   <button name="button" onclick="location.href='@Url.Action("GetAllArtist", "Home")'">Mostrar información</button>
+</div>
+
