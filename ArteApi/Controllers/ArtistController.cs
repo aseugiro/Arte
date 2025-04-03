@@ -17,12 +17,13 @@ namespace ArteApi.Controllers
             //string connectionString = "User Id=system;Password=emiyas17;Data Source=localhost:1521/XE";
           
             var ArtistList = new Collection<Artist>();
-            string queryString = "SELECT ID_, NAME_,COUNTRY, DESCRIPCION FROM SYSTEM.ARTIST";
+            string queryString = "SELECT ID_, NAME_,COUNTRY, DESCRIPCION FROM SYSTEM.ARTIST WHERE DELETE_=0";
             using (OracleConnection connection = new OracleConnection(UI.ConnectionString))
             {
                 OracleCommand command = new OracleCommand(queryString, connection);
                 await connection.OpenAsync();
                  OracleDataReader  reader = await command.ExecuteReaderAsync();
+
                 try
                 {
                     while (await reader.ReadAsync())
@@ -40,7 +41,8 @@ namespace ArteApi.Controllers
                     }
                 }catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                   
+                    return BadRequest(ex.Message);
                 }
                 finally
                 {
@@ -80,7 +82,7 @@ namespace ArteApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    return BadRequest(ex.Message);
                 }
                 finally
                 {
@@ -117,7 +119,7 @@ namespace ArteApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    return BadRequest(ex.Message);
                 }
                 finally
                 {
@@ -130,7 +132,58 @@ namespace ArteApi.Controllers
             return result> 0 ? NotFound() : Ok(Artist);
         }
 
-    }
+
+        [HttpDelete("DeleteArtist")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeleteArtist(Int16 ID)
+        {
+             
+            using (OracleConnection connection = new OracleConnection(UI.ConnectionString))
+            {
+                    await connection.OpenAsync();
+
+                    using (OracleTransaction transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted))
+                    {
+
+                        try
+                        {
+
+                            OracleCommand cmd = new OracleCommand("SP_DELETE_PAINT_ARTIST", connection);
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Add(new OracleParameter("@ID_IN", ID));
+                            cmd.Transaction = transaction;
+
+                            await cmd.ExecuteNonQueryAsync();
+                            cmd.Parameters.Clear();
+
+                            cmd = new  OracleCommand("SP_DELETE_ARTIST", connection);
+                            cmd.CommandType = CommandType.StoredProcedure;
+                            cmd.Parameters.Add(new OracleParameter("@ID_IN", ID));
+
+                            await cmd.ExecuteNonQueryAsync();
+                            
+                            transaction.Commit();
+
+
+                        }
+                        catch (Exception ex)
+                        {
+                                transaction.Rollback();
+                                return BadRequest(ex.Message);
+                        }
+                        finally
+                        {
+                            // always call Close when done reading.
+                            await connection.CloseAsync();
+                        }
+                    }
+            }
+
+            return Ok();
+        }
+    
+
+}
 
 
 }

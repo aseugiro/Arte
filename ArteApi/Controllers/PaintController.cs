@@ -14,7 +14,6 @@ namespace ArteApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetAPaint(Int16 ID )
         {
-            //string connectionString = "User Id=system;Password=emiyas17;Data Source=localhost:1521/XE";
 
             var PaintList = new Collection<Paint>();
             string queryString = string.Format("SELECT ID_, NAME_,TYPE_, DESCRIPCION FROM SYSTEM.PAINT WHERE ID_ARTIST={0} AND DELETE_=0", ID);
@@ -41,7 +40,7 @@ namespace ArteApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    return BadRequest(ex.Message);
                 }
                 finally
                 {
@@ -82,7 +81,7 @@ namespace ArteApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    return BadRequest(ex.Message);
                 }
                 finally
                 {
@@ -115,7 +114,7 @@ namespace ArteApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    return BadRequest(ex.Message);
                 }
                 finally
                 {

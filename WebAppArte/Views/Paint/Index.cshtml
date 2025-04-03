@@ -44,20 +44,25 @@
             </td>
             <td>
               
-                <a href="#" onclick="Delete(@item.ID)">Eliminar</a>
+                <a href="#" onclick="Delete(@item.ID,@ViewData["IDArtist"])">Eliminar</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
 
+@if(Model.Count()==0){
+    <div class="text-center">
+  No hay información para mostrar
 
+</div>
+ }
 <script>
 
-    function Delete(ID){
+    function Delete(ID,IDArtist){
         var resultado=confirm("Esta seguro de eliminar el registro ?");
         if(resultado==true){
-            window.location = '@Url.Action("Delete", "Paint")?ID='+ID; 
+            window.location = '@Url.Action("Delete", "Paint")?ID='+ID+"&IDArtist="+IDArtist; 
         }
 
     }

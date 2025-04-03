@@ -43,6 +43,12 @@ namespace WebAppArte.Controllers
                 string data=  response.Content.ReadAsStringAsync().Result;
                 artistLst = JsonConvert.DeserializeObject<List<Artist>>(data);
             }
+            else
+            {
+                ErrorViewModel error=new ErrorViewModel();
+                error.RequestId = response.StatusCode.ToString();
+                return View("Error",error);
+            }
            
             return View("Artist",artistLst);
         }
@@ -53,6 +59,35 @@ namespace WebAppArte.Controllers
             return View(artist);
         }
 
+
+        public async Task<IActionResult> Delete(int ID)
+        {
+
+            List<Artist> ArtistLst = new List<Artist>();
+            HttpResponseMessage response = await _httpClient.DeleteAsync(_httpClient.BaseAddress + "/artist/DeleteArtist?ID=" + ID);
+
+            if (response.IsSuccessStatusCode)
+            {
+                response = await _httpClient.GetAsync(_httpClient.BaseAddress + "/artist/GetArtist");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    //listaArtista = await response.Content.ReadAsStringAsync();
+                    string data = response.Content.ReadAsStringAsync().Result;
+                    ArtistLst = JsonConvert.DeserializeObject<List<Artist>>(data);
+                }
+                else
+                {
+                    ErrorViewModel error = new ErrorViewModel();
+                    error.RequestId = response.StatusCode.ToString();
+                    return View("Error", error);
+                }
+
+
+            }
+
+            return View("Artist", ArtistLst);
+        }
 
         public async Task<IActionResult> PostArtist(Artist artist)
         {
@@ -69,7 +104,13 @@ namespace WebAppArte.Controllers
                 //listaArtista = await response.Content.ReadAsStringAsync();
                 string data = response.Content.ReadAsStringAsync().Result;
                 artistResponse = JsonConvert.DeserializeObject<Artist>(data);
-              
+
+            }
+            else
+            {
+                ErrorViewModel error = new ErrorViewModel();
+                error.RequestId = response.StatusCode.ToString();
+                return View("Error", error);
             }
 
             return View("Edit", artistResponse);
